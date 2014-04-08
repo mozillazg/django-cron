@@ -1,5 +1,4 @@
 import sys
-from datetime import datetime
 from optparse import make_option
 import traceback
 
@@ -48,10 +47,17 @@ class Command(BaseCommand):
         Iterates over all the CRON_CLASSES (or if passed in as a commandline argument)
         and runs them.
         """
+        cron_classes = getattr(settings, 'CRON_CLASSES', {})
         if args:
-            cron_class_names = args
+            try:
+                cron_class_names = [cron_classes[x] for x in args]
+            except TypeError:
+                cron_class_names = args
         else:
-            cron_class_names = getattr(settings, 'CRON_CLASSES', [])
+            try:
+                cron_class_names = cron_classes.values()
+            except AttributeError:
+                cron_class_names = cron_classes
 
         try:
             crons_to_run = map(lambda x: get_class(x), cron_class_names)
