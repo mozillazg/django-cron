@@ -55,7 +55,7 @@ class Command(BaseCommand):
                 cron_class_names = args
         else:
             try:
-                cron_class_names = cron_classes.values()
+                cron_class_names = reduce(lambda x, y: x + y, cron_classes.values())
             except AttributeError:
                 cron_class_names = cron_classes
 
