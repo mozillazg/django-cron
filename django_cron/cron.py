@@ -16,8 +16,12 @@ class FailedRunsNotificationCronJob(CronJobBase):
     code = 'django_cron.FailedRunsNotificationCronJob'
 
     def do(self):
-
-        CRONS_TO_CHECK = map(lambda x: get_class(x), settings.CRON_CLASSES)
+        cron_classes = getattr(settings, 'CRON_CLASSES', {})
+        try:
+            cron_class_names = cron_classes.values()
+        except AttributeError:
+            cron_class_names = cron_classes
+        CRONS_TO_CHECK = map(lambda x: get_class(x), cron_class_names)
         EMAILS = [admin[1] for admin in settings.ADMINS]
 
         try:
