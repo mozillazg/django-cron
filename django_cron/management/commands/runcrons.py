@@ -50,7 +50,7 @@ class Command(BaseCommand):
         cron_classes = getattr(settings, 'CRON_CLASSES', {})
         if args:
             try:
-                cron_class_names = [cron_classes[x] for x in args]
+                cron_class_names = reduce(lambda x, y: x + y, [cron_classes[x] for x in args])
             except TypeError:
                 cron_class_names = args
         else:
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 cron_class_names = cron_classes
 
         try:
-            cron_class_names = reduce(lambda x, y: x + y, [cron_classes[x] for x in args])
+            crons_to_run = map(lambda x: get_class(x), cron_class_names)
         except:
             error = traceback.format_exc()
             print('Make sure these are valid cron class names: %s\n%s' % (cron_class_names, error))
